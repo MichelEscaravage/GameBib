@@ -1,0 +1,137 @@
+<Window
+    x:Class="GameBib.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GameBib"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:localData="using:GameBib.Data.Classes"
+    mc:Ignorable="d">
+
+    <Grid x:Name="mainGrid" Background="#1C1C1C">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Grid.Row="0" Background="#2C2C2C" Padding="10">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button 
+                x:Name="ShowGenreList" 
+                Click="ShowGenreList_Click" 
+                Background="#39FF14" 
+                Foreground="#FFFFFF" 
+                BorderBrush="#39FF14" 
+                BorderThickness="1" 
+                Padding="10,5" 
+                Margin="5"
+                FontFamily="Consolas"
+                FontWeight="Bold"
+                Grid.Column="0">
+                SHOW GENRELIST
+            </Button>
+
+            <Button 
+                x:Name="NewGameButton" 
+                Click="NewGameButton_Click" 
+                Background="#FFA500" 
+                Foreground="#FFFFFF" 
+                BorderBrush="#FFA500" 
+                BorderThickness="1" 
+                Padding="10,5" 
+                Margin="5"
+                FontFamily="Consolas"
+                FontWeight="Bold"
+                Grid.Column="1">
+                MAKE NEW GAME
+            </Button>
+
+            <Button 
+                x:Name="AddGenreButton" 
+                Content="ADD NEW GENRE" 
+                Click="AddGenreButton_Click"
+                Background="#FF4550" 
+                Foreground="#FFFFFF" 
+                BorderThickness="1" 
+                Padding="10,5" 
+                Margin="5"
+                FontFamily="Consolas"
+                FontWeight="Bold"
+                Grid.Column="2"/>
+
+            <TextBox 
+                x:Name="FilterBox" TextChanged="FilterBox_TextChanged" Grid.Column="3" PlaceholderText="Filter Games..." Background="#333333" Foreground="#FFFFFF" BorderBrush="#39FF14" BorderThickness="1" Padding="5" Margin="5"/>
+        </Grid>
+
+        <ListView x:Name="GameList" Grid.Column="1" Grid.Row="1" Background="Transparent" IsItemClickEnabled="True" ItemClick="GameList_ItemClick" Padding="10" Width="350" HorizontalAlignment="Center">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="localData:Game">
+                    <Border BorderBrush="#39FF14" BorderThickness="1" CornerRadius="5" Padding="10" Margin="5" Background="#333333">
+                        <StackPanel>
+                            <TextBlock Text="{x:Bind Name}" Foreground="#39FF14" FontSize="18" FontFamily="Consolas" FontWeight="Bold" />
+                            <TextBlock Text="{x:Bind Description}" Foreground="#FFFFFF" FontSize="14" FontFamily="Consolas" Margin="0,5,0,0" TextWrapping="WrapWholeWords" />
+
+                            <!-- Genre List -->
+                            <ListView x:Name="GenresListView" IsItemClickEnabled="True" ItemClick="GenresListView_ItemClick" ItemsSource="{x:Bind GameGenres}" Margin="0,5,0,0">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="localData:GameGenre">
+                                        <TextBlock Text="{x:Bind Genre.Name}" Foreground="#FEB710" FontSize="12" FontFamily="Consolas" Margin="5,0,0,0"/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <TextBlock Text="{x:Bind Rating}" Foreground="#39FF14" FontSize="18" FontFamily="Consolas" FontWeight="Bold" />
+
+                            <TextBlock Text="{x:Bind ReleaseDateToString}" Foreground="#FF4500" FontSize="12" FontFamily="Consolas" Margin="0,5,0,0" />
+                            <TextBlock Text="-------------------" Foreground="#39FF14" Margin="0,5,0,0" />
+
+                            <StackPanel Orientation="Horizontal">
+                                <Button 
+                                    x:Name="EditButton" 
+                                    Click="EditButton_Click" 
+                                    Background="#39FF14" 
+                                    Foreground="#FFFFFF" 
+                                    BorderBrush="#39FF14" 
+                                    BorderThickness="1" 
+                                    Padding="5,5" 
+                                    Margin="5"
+                                    CommandParameter="{Binding}">
+                                    EDIT
+                                </Button>
+                                <Button 
+                                    x:Name="DeleteButton" 
+                                    Click="DeleteButton_Click" 
+                                    Background="#FF4500" 
+                                    Foreground="#FFFFFF" 
+                                    BorderBrush="#FF4500" 
+                                    BorderThickness="1" 
+                                    Padding="5,5" 
+                                    Margin="5"
+                                    CommandParameter="{Binding}">
+                                    DELETE
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+
+        <Frame x:Name="SideContentFrame" Visibility="Collapsed" Grid.Column="2" Grid.Row="1"/>
+        <Button x:Name="closeGameButton" Margin="0,8,8,0" Visibility="Collapsed" Click="closeGameButton_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1" Background="Red">X</Button>
+
+
+    </Grid>
+</Window>
