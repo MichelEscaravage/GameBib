@@ -1,5 +1,8 @@
 using GameBib.Data.Classes;
+using GameBib.Data.Lists;
+using GameBib.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -16,6 +19,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Gaming.XboxLive.Storage;
+using Windows.Services.Maps;
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -35,6 +40,7 @@ namespace GameBib
         public GameSavedCallbackButton AddGenre;
         public GameSavedCallback DeleteGenre;
         public GameSavedCallback EditGenre;
+        private bool IsGameChecked;
 
         private readonly AppDbContext _context = new AppDbContext();
 
@@ -47,21 +53,60 @@ namespace GameBib
             RefreshGameList = ShowGames;
             _MoveListBack = MoveListBack;
             AddGenre = AddGenreButton_Click;
+            AppWindow.SetPresenter(Microsoft.UI.Windowing.AppWindowPresenterKind.FullScreen);
         }
 
         internal void ShowGames()
         {
-            using (var db = new AppDbContext())
+            if (User.LoggedInUser.RoleId != Role.Admin)
             {
-                var games = db.Game
-                    .Include(game => game.GameGenres)
-                    .ThenInclude(gameGenre => gameGenre.Genre)
-                    .OrderBy(game => game.Name)
-                    .ToList();
+                AdminButton.Visibility = Visibility.Collapsed;
+            }
 
-                GameList.ItemsSource = games;
+            string selectedList = FilterGamesButton.Content?.ToString() ?? "all";
+            {
+
+                using (var db = new AppDbContext())
+                {
+                    var games = db.Game
+                        .Include(game => game.GameGenres)
+                        .ThenInclude(gameGenre => gameGenre.Genre)
+                        .OrderBy(game => game.Name);
+
+                    if (selectedList == "My Games")
+                    {
+                        var myGames = games
+                             .Where(g => g.UserGames.Any(ug => ug.UserId == User.LoggedInUser.Id))
+                             .ToList();
+                        Debug.WriteLine(User.LoggedInUser.Name);
+
+                        GameList.ItemsSource = myGames;
+                        return;
+                    }
+
+                    GameList.ItemsSource = games.ToList();
+                }
+            }
+
+        }
+
+        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuFlyoutItem selectedItem)
+            {
+                if (FilterGamesButton.ContentTemplateRoot is StackPanel stackPanel)
+                {
+                    var textBlock = stackPanel.Children.OfType<TextBlock>().FirstOrDefault();
+                    if (textBlock != null)
+                    {
+                        textBlock.Text = selectedItem.Text;
+                    }
+                }
+
+                ShowGames(); 
             }
         }
+
         private void GameList_ItemClick(object sender, ItemClickEventArgs e)
         {
             Grid.SetColumn(GameList, 0);
@@ -71,11 +116,10 @@ namespace GameBib
             closeGameButton.Visibility = Visibility.Visible;
         }
 
-
         private void GenresListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             Grid.SetColumn(GameList, 0);
-            GameGenre selectedItem = e.ClickedItem as GameGenre;    
+            GameGenre selectedItem = e.ClickedItem as GameGenre;
             SideContentFrame.Navigate(typeof(ShowGamesOfGenrePage), selectedItem);
             SideContentFrame.Visibility = Visibility.Visible;
             closeGameButton.Visibility = Visibility.Visible;
@@ -94,6 +138,7 @@ namespace GameBib
             SideContentFrame.Navigate(typeof(ShowAllGenresPage), parameters);
             SideContentFrame.Visibility = Visibility.Visible;
             closeGameButton.Visibility = Visibility.Visible;
+            FilterBox.Text = "";
         }
 
         private void NewGameButton_Click(object sender, RoutedEventArgs e)
@@ -107,6 +152,7 @@ namespace GameBib
             SideContentFrame.Navigate(typeof(CreateGame), parameters);
             SideContentFrame.Visibility = Visibility.Visible;
             closeGameButton.Visibility = Visibility.Visible;
+            FilterBox.Text = "";
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
@@ -123,11 +169,12 @@ namespace GameBib
 
             SideContentFrame.Visibility = Visibility.Visible;
             closeGameButton.Visibility = Visibility.Visible;
+            FilterBox.Text = "";
         }
 
         private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            
+
             Game selectedItem = (sender as Button).CommandParameter as Game;
 
             var confirmDialog = new ContentDialog()
@@ -178,10 +225,12 @@ namespace GameBib
             {
                 string lowerFilter = filter.ToLower();
 
-                var games = db.Game 
+                var games = db.Game
                     .Include(game => game.GameGenres)
                         .ThenInclude(gameGenre => gameGenre.Genre)
                     .ToList();
+
+
 
                 var filteredGames = games
                     .Where(game =>
@@ -208,6 +257,149 @@ namespace GameBib
             SideContentFrame.Navigate(typeof(CreateGenrePage), parameters);
             SideContentFrame.Visibility = Visibility.Visible;
             closeGameButton.Visibility = Visibility.Visible;
+            FilterBox.Text = "";
+        }
+
+        private async void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var confirmDialog = new ContentDialog()
+            {
+                Title = $"Logging out",
+                Content = $"Are you sure you want to log out?",
+                PrimaryButtonText = "Close",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Close,
+                XamlRoot = this.mainGrid.XamlRoot
+            };
+
+            var result = await confirmDialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
+
+                var cookieFile = await storageFolder.GetFileAsync("remember_token.txt");
+                await cookieFile.DeleteAsync();
+
+                User.LoggedInUser.RememberToken = null;
+
+                LoginWindow loginWindow = new LoginWindow();
+
+                loginWindow.Activate();
+                this.Close();
+            }
+            return;
+        }
+        private async void FavButton_Click(object sender, RoutedEventArgs e)
+        {
+            FilterBox.Text = "";
+            Button button = sender as Button;
+            Game selectedItem = button?.CommandParameter as Game;
+            User selectedUser = User.LoggedInUser;
+            string selectedList = FilterGamesButton.Content?.ToString();
+            {
+                if (selectedItem != null)
+                {
+                    using (var db = new AppDbContext())
+                    {
+                        // Check if the game is already in the favorites list
+                        var userGame = db.UserGames
+                            .FirstOrDefault(ug => ug.UserId == selectedUser.Id && ug.GameId == selectedItem.Id);
+
+                        if (userGame == null)
+                        {
+                            // If not, add it to the favorites
+                            db.UserGames.Add(new UserGames(selectedUser.Id, selectedItem.Id));
+                            await db.SaveChangesAsync();
+
+                            FilterGamesButton.Content = "My Games";
+                            ShowGames();
+                        }
+                        if (selectedList == "My Games")
+                        {
+                            var userGameToRemove = db.UserGames
+                                .FirstOrDefault(ug => ug.UserId == selectedUser.Id && ug.GameId == selectedItem.Id);
+
+                            if (userGameToRemove != null)
+                            {
+                                db.UserGames.Remove(userGameToRemove);
+                                IsGameChecked = false;
+                                await db.SaveChangesAsync();
+                                ShowGames();
+                            }
+                        }
+
+
+                    }
+                }
+            }
+        }
+
+        private void FavButton_Loaded(object sender, RoutedEventArgs e)
+        {
+            Button favButton = sender as Button;
+            if (favButton != null)
+            {
+                string selectedList = FilterGamesButton.Content?.ToString();
+                {
+                    if (selectedList == "My Games")
+                    {
+                        favButton.Content = "Un-Favourite";
+                    }
+                }
+            }
+        }
+
+        private void AdminFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuFlyoutItem selectedItem)
+            {
+                AdminButton.Content = selectedItem.Text;
+
+                if (selectedItem.Text == "Users")
+                {
+                    using (var db = new AppDbContext())
+                    {
+                        var users = db.User
+                               .Include(user => user.UserGames)
+                               .ThenInclude(UserGames => UserGames.Game)
+                               .OrderBy(User => User.Name);
+
+                        UsersListView.ItemsSource = users;
+
+                        GameList.Visibility = Visibility.Collapsed;
+                        UsersListView.Visibility = Visibility.Visible;
+                    }
+                }
+                else if (selectedItem.Text == "Games")
+                {
+                    GameList.Visibility = Visibility.Visible;
+                    UsersListView.Visibility = Visibility.Collapsed;
+                }
+            };
+
+
+        }
+
+        private async void closeWindowButton_Click(object sender, RoutedEventArgs e)
+        {
+            var confirmDialog = new ContentDialog()
+            {
+                Title = $"Closing down the application",
+                Content = $"Are you sure you want to close the application?",
+                PrimaryButtonText = "Close",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Close,
+                XamlRoot = this.mainGrid.XamlRoot
+            };
+
+            var result = await confirmDialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                this.Close();
+            }
+            return;
+
         }
     }
 }
+

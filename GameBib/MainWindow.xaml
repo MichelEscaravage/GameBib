@@ -19,13 +19,17 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Grid.Row="0" Background="#2C2C2C" Padding="10">
+        <Grid x:Name="TopBar" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Grid.Row="0" Background="#2C2C2C" Padding="10">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="0.2*"/>
             </Grid.ColumnDefinitions>
 
             <Button 
@@ -64,15 +68,62 @@
                 Click="AddGenreButton_Click"
                 Background="#FF4550" 
                 Foreground="#FFFFFF" 
-                BorderThickness="1" 
+                BorderThickness="1"     
                 Padding="10,5" 
                 Margin="5"
                 FontFamily="Consolas"
                 FontWeight="Bold"
-                Grid.Column="2"/>
+                Grid.Column="2">
+            </Button>
 
-            <TextBox 
-                x:Name="FilterBox" TextChanged="FilterBox_TextChanged" Grid.Column="3" PlaceholderText="Filter Games..." Background="#333333" Foreground="#FFFFFF" BorderBrush="#39FF14" BorderThickness="1" Padding="5" Margin="5"/>
+            <Button x:Name="FilterGamesButton" Grid.Column="3" Width="200">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="All Games" VerticalAlignment="Center" />
+                            <FontIcon Glyph="&#xE70D;" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+                <Button.Flyout>
+                    <MenuFlyout x:Name="GameFilterFlyout">
+                        <MenuFlyoutItem Text="All Games" Click="MenuFlyoutItem_Click"/>
+                        <MenuFlyoutItem Text="My Games" Click="MenuFlyoutItem_Click"/>
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+
+            <TextBox x:Name="FilterBox" TextChanged="FilterBox_TextChanged" Grid.Column="4" PlaceholderText="Filter Games..." Background="#333333" Foreground="#FFFFFF" BorderBrush="#39FF14" BorderThickness="1" Padding="5" Margin="5"/>
+
+            <Button
+            x:Name="AdminButton"
+            Content="Games"
+            Grid.Column="5"
+            HorizontalAlignment="Center"
+            Background="#DAA520" 
+            Foreground="#FFFFFF" 
+            BorderThickness="1"     
+            Padding="10,5" 
+            Margin="0,0,0,5"
+            FontFamily="Consolas"
+            FontWeight="Bold"
+            Width="auto">
+                <Button.Flyout>
+                    <MenuFlyout x:Name="ShowUserListFlyout">
+                        <MenuFlyoutItem Text="Games" Click="AdminFlyoutItem_Click"/>
+                        <MenuFlyoutItem Text="Users" Click="AdminFlyoutItem_Click"/>
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+
+            <Button x:Name="LogoutButton" Grid.Column="6" Content="Logout" Click="LogoutButton_Click"/>
+
+            <Button 
+                x:Name="closeWindowButton" 
+                Click="closeWindowButton_Click" 
+                HorizontalAlignment="Right"
+                Grid.Column="7" 
+                Background="Red">X</Button>
         </Grid>
 
         <ListView x:Name="GameList" Grid.Column="1" Grid.Row="1" Background="Transparent" IsItemClickEnabled="True" ItemClick="GameList_ItemClick" Padding="10" Width="350" HorizontalAlignment="Center">
@@ -80,7 +131,7 @@
                 <DataTemplate x:DataType="localData:Game">
                     <Border BorderBrush="#39FF14" BorderThickness="1" CornerRadius="5" Padding="10" Margin="5" Background="#333333">
                         <StackPanel>
-                            <TextBlock Text="{x:Bind Name}" Foreground="#39FF14" FontSize="18" FontFamily="Consolas" FontWeight="Bold" />
+                            <TextBlock Text="{x:Bind Name}" Foreground="#39FF14" FontSize="18" FontFamily="Consolas" FontWeight="Bold" TextWrapping="Wrap"/>
                             <TextBlock Text="{x:Bind Description}" Foreground="#FFFFFF" FontSize="14" FontFamily="Consolas" Margin="0,5,0,0" TextWrapping="WrapWholeWords" />
 
                             <!-- Genre List -->
@@ -121,6 +172,21 @@
                                     CommandParameter="{Binding}">
                                     DELETE
                                 </Button>
+
+                                <Button Name="FavButton"
+                                    Content="FAVORITE"
+                                    Click="FavButton_Click"
+                                    CommandParameter="{Binding}"
+                                    Background="#39FF14"
+                                    Foreground="#FFFFFF"
+                                    BorderBrush="#39FF14"
+                                    BorderThickness="1"
+                                    Padding="5,5"
+                                    Margin="5"
+                                    FontFamily="Consolas"
+                                    FontWeight="Bold"
+                                    Loaded="FavButton_Loaded"/>
+                                
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -128,10 +194,40 @@
             </ListView.ItemTemplate>
         </ListView>
 
+        <ListView x:Name="UsersListView" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Background="Transparent" IsItemClickEnabled="True" ItemClick="GameList_ItemClick" Padding="10" Width="auto" HorizontalAlignment="Center" Visibility="Collapsed">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="localData:User">
+                    <Border BorderBrush="#39FF14" BorderThickness="1" CornerRadius="5" Padding="10" Margin="5" Background="#333333">
+                        <StackPanel>
+                            <TextBlock Text="{x:Bind Name}" Foreground="#39FF14" FontSize="18" FontFamily="Consolas" FontWeight="Bold" />
+                            <TextBlock Text="{x:Bind UserName}" Foreground="#FFFFFF" FontSize="14" FontFamily="Consolas" Margin="0,5,0,0" TextWrapping="WrapWholeWords" />
+
+                            <!-- Game List -->
+                            <ListView x:Name="GameListView" IsItemClickEnabled="True" MaxHeight="90" ItemsSource="{x:Bind UserGames }" Margin="0,5,0,0">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="localData:UserGames">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <TextBlock Grid.Column="0" Text="{x:Bind Game.Id}" Foreground="#FEB710" FontSize="12" FontFamily="Consolas" Margin="5,0,0,0"/>
+                                            <TextBlock Grid.Column="1" Text="{x:Bind Game.Name}" Foreground="#FEB710" FontSize="12" FontFamily="Consolas" Margin="5,0,0,0"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+
+                            <TextBlock Text="-------------------" Foreground="#39FF14" Margin="0,5,0,0" />
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
 
         <Frame x:Name="SideContentFrame" Visibility="Collapsed" Grid.Column="2" Grid.Row="1"/>
         <Button x:Name="closeGameButton" Margin="0,8,8,0" Visibility="Collapsed" Click="closeGameButton_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1" Background="Red">X</Button>
-
 
     </Grid>
 </Window>

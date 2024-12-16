@@ -18,7 +18,7 @@ namespace GameBib
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e);
+            base.OnNavigatedTo(e);  
 
             // Check if parameter is a GameGenre
             if (e.Parameter is GameGenre selectedGenre)

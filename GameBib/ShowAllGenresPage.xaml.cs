@@ -1,4 +1,5 @@
 using GameBib.Data.Classes;
+using GameBib.Utility;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -69,6 +70,27 @@ namespace GameBib
         private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             Genre selectedItem = (sender as Button).CommandParameter as Genre;
+
+            var genreToCheck = _context.Genre
+                .Where(g => g.Id == selectedItem.Id)
+                .Select(g => new { g.Name, g.GameGenres })
+                .FirstOrDefault();
+
+            if (genreToCheck != null && genreToCheck.GameGenres.Any())
+            {
+                var gameConnected = new ContentDialog()
+                {
+                    Title = $"{selectedItem.Name} still has game(s) connected",
+                    Content = $"{selectedItem.Name} cannot be deleted before the connected games are deleted",
+                    PrimaryButtonText = "OK",
+                    DefaultButton = ContentDialogButton.Close,
+                };
+
+                gameConnected.XamlRoot = this.XamlRoot;
+                await gameConnected.ShowAsync();
+
+                return;
+            }
 
             var confirmDialog = new ContentDialog()
             {

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameBib.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241031121316_everygameatleastonegenre")]
-    partial class everygameatleastonegenre
+    [Migration("20241205122404_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -426,6 +426,71 @@ namespace GameBib.Migrations
                         {
                             GameId = 17,
                             GenreId = 4
+                        },
+                        new
+                        {
+                            GameId = 29,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            GameId = 18,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            GameId = 27,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            GameId = 21,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 22,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            GameId = 25,
+                            GenreId = 7
+                        },
+                        new
+                        {
+                            GameId = 19,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            GameId = 20,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            GameId = 26,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            GameId = 24,
+                            GenreId = 7
+                        },
+                        new
+                        {
+                            GameId = 28,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            GameId = 30,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            GameId = 23,
+                            GenreId = 1
                         });
                 });
 
@@ -487,6 +552,206 @@ namespace GameBib.Migrations
                         });
                 });
 
+            modelBuilder.Entity("GameBib.Data.Classes.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FailedLoginAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HashedPassword")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("LastFailedLogin")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RememberToken")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FailedLoginAttempts = 0,
+                            HashedPassword = "7fEF1/Rivm1DzLAAAHpLG0P75OVo9QlCJHinlRXttB4=:zrSw/7N2u5Uix9MFrPPqoA==:10000:SHA512",
+                            LastFailedLogin = new DateTime(2024, 12, 4, 13, 24, 4, 17, DateTimeKind.Local).AddTicks(1864),
+                            Name = "Michel",
+                            RememberToken = "LBM5npo2FY",
+                            UserName = "Miesvors"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            FailedLoginAttempts = 1,
+                            HashedPassword = "HVmabCMtFrZiiV1SsMppebNnGcLLiDBi9HmrstpXk7A=:nj8w/b7Sl9MWBvDs4u01Ug==:10000:SHA512",
+                            LastFailedLogin = new DateTime(2024, 12, 5, 8, 24, 4, 22, DateTimeKind.Local).AddTicks(7193),
+                            Name = "Laura",
+                            RememberToken = "1imB0TjIkW",
+                            UserName = "LauSky"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FailedLoginAttempts = 0,
+                            HashedPassword = "dk2UiqviyaitlMRy6UbSUcyJScts9el0MoUTkt6QLvk=:XR4ubIGmOZyg8zD1IgevWg==:10000:SHA512",
+                            LastFailedLogin = new DateTime(2024, 12, 3, 13, 24, 4, 28, DateTimeKind.Local).AddTicks(3191),
+                            Name = "Tom",
+                            RememberToken = "2uAy2VJ4yJ",
+                            UserName = "Tomster"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FailedLoginAttempts = 2,
+                            HashedPassword = "rEWYBUi7CFLEvCbKLEi681Y5kzy28VTBp9q369Y2x1Q=:nnK8r/IjqAb1bcWPVQLtuw==:10000:SHA512",
+                            LastFailedLogin = new DateTime(2024, 12, 5, 12, 54, 4, 34, DateTimeKind.Local).AddTicks(534),
+                            Name = "Emma",
+                            RememberToken = "iJxLcFUQOA",
+                            UserName = "EmStar"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            FailedLoginAttempts = 0,
+                            HashedPassword = "Hvqwbl4pNTUTMyu1Y7rLAobJz9IRcZzXp9VtHFOAX6c=:hamW/N9EcZSBfnNAGtyRUw==:10000:SHA512",
+                            LastFailedLogin = new DateTime(2024, 12, 5, 3, 24, 4, 39, DateTimeKind.Local).AddTicks(6636),
+                            Name = "James",
+                            RememberToken = "eXsusHdViJ",
+                            UserName = "JimmyBoy"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            FailedLoginAttempts = 3,
+                            HashedPassword = "SD95JdwLyzl8Pn+d+4HdMgZXBejS5LcGDjWTeLeO7OI=:7apqyiRSaA93uSWTSUVpzg==:10000:SHA512",
+                            LastFailedLogin = new DateTime(2024, 12, 2, 13, 24, 4, 45, DateTimeKind.Local).AddTicks(2887),
+                            Name = "Sophia",
+                            RememberToken = "Hd4fOwKHwO",
+                            UserName = "Sophs"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            FailedLoginAttempts = 0,
+                            HashedPassword = "+MdF/OYxp1wfEeFp6zNK9+3XwTGSMeS7c/RHBCd9Jos=:nLkhm9jtqE0rrr2nNjl+Fg==:10000:SHA512",
+                            LastFailedLogin = new DateTime(2024, 12, 5, 5, 24, 4, 50, DateTimeKind.Local).AddTicks(9474),
+                            Name = "Liam",
+                            RememberToken = "hioP6aJDdb",
+                            UserName = "Liamster"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            FailedLoginAttempts = 1,
+                            HashedPassword = "79U/ZsIIuCEl0lLYoEwikOJcrb1LPqD4eyolgUkgurc=:bWKsjkXAg9mGxKyJXE5O3w==:10000:SHA512",
+                            LastFailedLogin = new DateTime(2024, 11, 28, 13, 24, 4, 56, DateTimeKind.Local).AddTicks(5737),
+                            Name = "Olivia",
+                            RememberToken = "LNBqymlKt1",
+                            UserName = "Livvy"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            FailedLoginAttempts = 0,
+                            HashedPassword = "sOV74XNc0oex7W0pqGpzCxt73ctB1/SAimPrJwun3/g=:u+YYz0ZmPHu6wrc/MXYQkg==:10000:SHA512",
+                            LastFailedLogin = new DateTime(2024, 11, 21, 13, 24, 4, 62, DateTimeKind.Local).AddTicks(2053),
+                            Name = "Ethan",
+                            RememberToken = "2UFrYtZ153",
+                            UserName = "Ethanator"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            FailedLoginAttempts = 2,
+                            HashedPassword = "OULP/qFxFg18A13MvHo25EGItfxRFK065TLSAHeHEoI=:BYDEfEyhTXKHyOy83juciQ==:10000:SHA512",
+                            LastFailedLogin = new DateTime(2024, 12, 4, 10, 24, 4, 67, DateTimeKind.Local).AddTicks(9768),
+                            Name = "Ava",
+                            RememberToken = "n9S5hWQD6B",
+                            UserName = "AvaQueen"
+                        });
+                });
+
+            modelBuilder.Entity("GameBib.Data.Classes.UserGames", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "GameId");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("UserGames");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            GameId = 1
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            GameId = 2
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            GameId = 3
+                        },
+                        new
+                        {
+                            UserId = 4,
+                            GameId = 4
+                        },
+                        new
+                        {
+                            UserId = 5,
+                            GameId = 5
+                        },
+                        new
+                        {
+                            UserId = 6,
+                            GameId = 6
+                        },
+                        new
+                        {
+                            UserId = 7,
+                            GameId = 7
+                        },
+                        new
+                        {
+                            UserId = 8,
+                            GameId = 8
+                        },
+                        new
+                        {
+                            UserId = 9,
+                            GameId = 9
+                        },
+                        new
+                        {
+                            UserId = 10,
+                            GameId = 10
+                        });
+                });
+
             modelBuilder.Entity("GameBib.Data.Classes.GameGenre", b =>
                 {
                     b.HasOne("GameBib.Data.Classes.Game", "Game")
@@ -506,14 +771,40 @@ namespace GameBib.Migrations
                     b.Navigation("Genre");
                 });
 
+            modelBuilder.Entity("GameBib.Data.Classes.UserGames", b =>
+                {
+                    b.HasOne("GameBib.Data.Classes.Game", "Game")
+                        .WithMany("UserGames")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameBib.Data.Classes.User", "User")
+                        .WithMany("UserGames")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("GameBib.Data.Classes.Game", b =>
                 {
                     b.Navigation("GameGenres");
+
+                    b.Navigation("UserGames");
                 });
 
             modelBuilder.Entity("GameBib.Data.Classes.Genre", b =>
                 {
                     b.Navigation("GameGenres");
+                });
+
+            modelBuilder.Entity("GameBib.Data.Classes.User", b =>
+                {
+                    b.Navigation("UserGames");
                 });
 #pragma warning restore 612, 618
         }

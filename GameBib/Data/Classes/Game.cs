@@ -16,5 +16,6 @@ namespace GameBib.Data.Classes
         public string ReleaseDateToString => ReleaseDate.ToString("dd/MM/yyyy");
 
         public ICollection<GameGenre> GameGenres { get; set; }
+        public ICollection<UserGames> UserGames { get; set; }   
     }
 }

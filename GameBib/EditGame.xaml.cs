@@ -1,5 +1,6 @@
 using GameBib.Data.Classes;
 using GameBib.Data.Lists;
+using GameBib.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -73,19 +74,42 @@ namespace GameBib
             }
         }
 
+        private bool IsGameNameValid(string gameName, string gameDescription)
+        {
+            var regex = new System.Text.RegularExpressions.Regex("^[a-zA-Z0-9]+$");
+
+            if (regex.IsMatch(gameName) && regex.IsMatch(gameDescription))
+            {
+                return true;
+            }
+            return false;
+        }
+
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsGameNameValid(GameNameTextBox.Text, GameDescriptionTextBox.Text))
+            {
+                var invalidNameDialog = new ContentDialog
+                {
+                    Title = "Invalid Game Name or Game Description",
+                    Content = "The game name and description can only contain letters and numbers.",
+                    CloseButtonText = "OK",
+                    XamlRoot = this.XamlRoot
+                };
+
+                await invalidNameDialog.ShowAsync();
+                return;
+            }
+
             // List of controls to validate
             var inputControls = new List<Control>
             {
                 GameNameTextBox,
                 GameDescriptionTextBox,
                 GameReleaseDateTextBox,
-                RatingSlider
+                RatingSlider,
+                GameGenresBox,
             };
-
-            // Track if any field is empty
-            bool hasEmptyFields = false;
 
             // Reset any previous styling
             foreach (var control in inputControls)
@@ -94,39 +118,7 @@ namespace GameBib
             }
             GameGenresBox.BorderBrush = new SolidColorBrush(Colors.Transparent);
 
-            // Check each control for input
-            foreach (var control in inputControls)
-            {
-                if (control is TextBox textBox && string.IsNullOrWhiteSpace(textBox.Text))
-                {
-                    // Add red placeholder text for empty TextBox
-                    textBox.PlaceholderText = "Required";
-                    textBox.PlaceholderForeground = new SolidColorBrush(Colors.Red);
-                    hasEmptyFields = true;
-                }
-                else if (control is DatePicker datePicker && datePicker.SelectedDate == null)
-                {
-                    // Add red outline to empty DatePicker
-                    datePicker.BorderBrush = new SolidColorBrush(Colors.Red);
-                    datePicker.BorderThickness = new Thickness(2);
-                    hasEmptyFields = true;
-                }
-                else if (control is Slider slider && slider.Value == 0) // or some invalid default
-                {
-                    // Add red outline to the Slider if not set
-                    slider.BorderBrush = new SolidColorBrush(Colors.Red);
-                    slider.BorderThickness = new Thickness(2);
-                    hasEmptyFields = true;
-                }
-            }
-
-            // Check if at least one genre is selected
-            if (GameGenresBox.SelectedItems.Count == 0)
-            {
-                GameGenresBox.BorderBrush = new SolidColorBrush(Colors.Red);
-                GameGenresBox.BorderThickness = new Thickness(2);
-                hasEmptyFields = true;
-            }
+            bool hasEmptyFields = FormChecker.ValidateControls(inputControls);
 
             // Exit if any field is empty
             if (hasEmptyFields)
@@ -172,7 +164,7 @@ namespace GameBib
                 contentDialog.XamlRoot = this.XamlRoot;
 
                 await contentDialog.ShowAsync();
-            }
+               }
         }
     }
 }

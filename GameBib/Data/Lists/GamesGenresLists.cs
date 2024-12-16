@@ -11,7 +11,7 @@ namespace GameBib.Data.Lists
     {
         public List<GameGenre> GameGenres = new List<GameGenre>
         {
-           new GameGenre(1, 1), 
+            new GameGenre(1, 1), 
             new GameGenre(1, 2), 
             new GameGenre(2, 1), 
             new GameGenre(2, 3), 

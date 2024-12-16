@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="GameBib.RegisterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GameBib"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Background="#1C1C1C">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Center Column -->
+        <Grid Grid.Column="1" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Name Section -->
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Name" FontSize="16" Foreground="#39FF14" FontFamily="Consolas"/>
+                <TextBox x:Name="NameTextBox" Grid.Row="1" Background="#333333" Foreground="#FFFFFF" FontSize="14" FontFamily="Consolas" BorderBrush="#39FF14" BorderThickness="1"/>
+            </Grid>
+
+            <!-- Username Section -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Name="usernameLabel" Grid.Row="0" Text="Username" FontSize="16" Foreground="#39FF14" FontFamily="Consolas"/>
+                <TextBox x:Name="UsernameTextBox" Grid.Row="1" Background="#333333" Foreground="#FFFFFF" FontSize="14" FontFamily="Consolas" BorderBrush="#39FF14" BorderThickness="1" LostFocus="UsernameTextBox_LostFocus"/>
+            </Grid>
+
+            <!-- Password Section -->
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Password" Grid.Row="0" FontSize="16" Foreground="#39FF14" FontFamily="Consolas"/>
+                <PasswordBox x:Name="PasswordTextBox" PasswordChanged="PasswordTextBox_PasswordChanged"  Grid.Row="1" Background="#333333" Foreground="#FFFFFF" FontSize="14" FontFamily="Consolas" BorderBrush="#39FF14" BorderThickness="1"/>
+            </Grid>
+
+            <!-- Confirm Password Section -->
+            <Grid Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Name="confirmPasswordLabel" Text="Confirm Password" Grid.Row="0" FontSize="16" Foreground="#39FF14" FontFamily="Consolas"/>
+                <PasswordBox x:Name="confirmPasswordTextBox" PasswordChanged="confirmPasswordTextBox_PasswordChanged"  Grid.Row="1" Background="#333333" Foreground="#FFFFFF" FontSize="14" FontFamily="Consolas" BorderBrush="#39FF14" BorderThickness="1"/>
+            </Grid>
+
+            <!-- Buttons Section -->
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button 
+                x:Name="RegisterButton" 
+                Grid.Column="0" 
+                Click="RegisterButton_Click" 
+                Content="Register" 
+                Background="#39FF14" 
+                Foreground="#FFFFFF" 
+                BorderBrush="#39FF14" 
+                BorderThickness="1" 
+                Padding="10,5" 
+                FontFamily="Consolas" 
+                FontWeight="Bold" 
+                Margin="5"/>
+
+                <Button 
+                x:Name="CancelButton" 
+                Grid.Column="1" 
+                Click="CancelButton_Click" 
+                Content="Cancel" 
+                Background="#FFA500" 
+                Foreground="#FFFFFF" 
+                BorderBrush="#FFA500" 
+                BorderThickness="1" 
+                Padding="10,5" 
+                FontFamily="Consolas" 
+                FontWeight="Bold" 
+                Margin="5"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

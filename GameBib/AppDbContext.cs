@@ -15,6 +15,8 @@ namespace GameBib
         public DbSet<Game> Game { get; set; }
         public DbSet<Genre> Genre { get; set; }
         public DbSet<GameGenre> GameGenre { get; set; } 
+        public DbSet<User> User {  get; set; }  
+        public DbSet<UserGames> UserGames { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -35,17 +37,27 @@ namespace GameBib
             modelBuilder.Entity<GameGenre>().HasOne(gg => gg.Game).WithMany(g => g.GameGenres).HasForeignKey(gg => gg.GameId);  
             modelBuilder.Entity<GameGenre>().HasOne(gg => gg.Genre).WithMany(g => g.GameGenres).HasForeignKey(gg => gg.GenreId);  
 
+            modelBuilder.Entity<UserGames>().HasKey(ug => new {ug.UserId, ug.GameId});
+            modelBuilder.Entity<UserGames>().HasOne(gg => gg.User).WithMany(u => u.UserGames).HasForeignKey(gg => gg.UserId);
+            modelBuilder.Entity<UserGames>().HasOne(gg => gg.Game).WithMany(g => g.UserGames).HasForeignKey(gg => gg.GameId);
+
             GameList gamesList = new GameList();
             GenreList genresList = new GenreList();
             GamesGenresLists gamesGenresLists = new GamesGenresLists();
+            UserGamesList userGamesList = new UserGamesList();
+            UserList userList = new UserList();
             
             List<Game> games = gamesList.GetGameList();
             List<Genre> genres = genresList.GetGenreList();
             List<GameGenre> gameGenres = gamesGenresLists.GetGameGenres();
+            List<UserGames> userGames = userGamesList.GetUserGames();
+            List<User> users = userList.GetUserList();
 
+            modelBuilder.Entity<User>().HasData(users.ToArray());
             modelBuilder.Entity<Game>().HasData(games.ToArray());
             modelBuilder.Entity<Genre>().HasData(genres.ToArray());
             modelBuilder.Entity<GameGenre>().HasData(gameGenres.ToArray());
+            modelBuilder.Entity<UserGames>().HasData(userGames.ToArray());
         }
     }
 }

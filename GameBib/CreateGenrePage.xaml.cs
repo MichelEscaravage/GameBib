@@ -1,4 +1,5 @@
 using GameBib.Data.Classes;
+using GameBib.Utility;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -45,8 +46,30 @@ namespace GameBib
             _MoveListBack = parameters._MoveListBack;
         }
 
+        private bool IsGenreNameValid(string genreName)
+        {
+            var regex = new System.Text.RegularExpressions.Regex("^[a-zA-Z0-9]+$");
+
+            return regex.IsMatch(genreName);
+        }
+
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+
+            if (!IsGenreNameValid(GenreNameTextBox.Text))
+            {
+                var invalidNameDialog = new ContentDialog
+                {
+                    Title = "Invalid Genre Name",
+                    Content = "The genre name can only contain letters and numbers",
+                    CloseButtonText = "OK",
+                    XamlRoot = this.XamlRoot
+                };
+
+                await invalidNameDialog.ShowAsync();
+                return;
+            }
+
             bool hasEmptyFields = false;
 
             if (GenreNameTextBox.Text == null || GenreNameTextBox.Text.Length == 0)
@@ -80,7 +103,6 @@ namespace GameBib
             _context.Genre.Add(newGenre);
             await _context.SaveChangesAsync();
 
-
             if (RefreshGameList != null)
             {
 
@@ -90,7 +112,7 @@ namespace GameBib
                 var contentDialog = new ContentDialog
                 {
                     Title = "Genre Saved!",
-                    Content = "Your game has been saved successfully.",
+                    Content = "Your genre has been saved successfully.",
                     CloseButtonText = "OK"
                 };
 
