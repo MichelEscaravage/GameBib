@@ -266,7 +266,7 @@ namespace GameBib
             {
                 Title = $"Logging out",
                 Content = $"Are you sure you want to log out?",
-                PrimaryButtonText = "Close",
+                PrimaryButtonText = "Logout",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = this.mainGrid.XamlRoot
