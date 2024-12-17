@@ -56,6 +56,8 @@ namespace GameBib
             AppWindow.SetPresenter(Microsoft.UI.Windowing.AppWindowPresenterKind.FullScreen);
         }
 
+        private string _selectedFilter = "All Games";
+
         internal void ShowGames()
         {
             if (User.LoggedInUser.RoleId != Role.Admin)
@@ -63,37 +65,33 @@ namespace GameBib
                 AdminButton.Visibility = Visibility.Collapsed;
             }
 
-            string selectedList = FilterGamesButton.Content?.ToString() ?? "all";
+            using (var db = new AppDbContext())
             {
+                var games = db.Game
+                    .Include(game => game.GameGenres)
+                    .ThenInclude(gameGenre => gameGenre.Genre)
+                    .OrderBy(game => game.Name);
 
-                using (var db = new AppDbContext())
+                if (_selectedFilter == "My Games")
                 {
-                    var games = db.Game
-                        .Include(game => game.GameGenres)
-                        .ThenInclude(gameGenre => gameGenre.Genre)
-                        .OrderBy(game => game.Name);
+                    var myGames = games
+                        .Where(g => g.UserGames.Any(ug => ug.UserId == User.LoggedInUser.Id))
+                        .ToList();
+                    Debug.WriteLine(User.LoggedInUser.Name);
 
-                    if (selectedList == "My Games")
-                    {
-                        var myGames = games
-                             .Where(g => g.UserGames.Any(ug => ug.UserId == User.LoggedInUser.Id))
-                             .ToList();
-                        Debug.WriteLine(User.LoggedInUser.Name);
-
-                        GameList.ItemsSource = myGames;
-                        return;
-                    }
-
-                    GameList.ItemsSource = games.ToList();
+                    GameList.ItemsSource = myGames;
+                    return;
                 }
-            }
 
+                GameList.ItemsSource = games.ToList();
+            }
         }
 
         private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
             if (sender is MenuFlyoutItem selectedItem)
             {
+                // Update the filter text in the TextBlock
                 if (FilterGamesButton.ContentTemplateRoot is StackPanel stackPanel)
                 {
                     var textBlock = stackPanel.Children.OfType<TextBlock>().FirstOrDefault();
@@ -102,10 +100,12 @@ namespace GameBib
                         textBlock.Text = selectedItem.Text;
                     }
                 }
+                _selectedFilter = selectedItem.Text;
 
-                ShowGames(); 
+                ShowGames();
             }
         }
+
 
         private void GameList_ItemClick(object sender, ItemClickEventArgs e)
         {
