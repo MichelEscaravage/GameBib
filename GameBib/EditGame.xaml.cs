@@ -76,7 +76,7 @@ namespace GameBib
 
         private bool IsGameNameValid(string gameName, string gameDescription)
         {
-            var regex = new System.Text.RegularExpressions.Regex("^[a-zA-Z0-9]+$");
+            var regex = new System.Text.RegularExpressions.Regex("^[a-zA-Z0-9 ]+$");
 
             if (regex.IsMatch(gameName) && regex.IsMatch(gameDescription))
             {
